@@ -1,4 +1,6 @@
 {
 	"mongoURI": "mongodb+srv://Shoumik2307:Shoumik2307@democluster.4rg1r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-	"jwtSecret": "mySuperSecretToken"
+	"jwtSecret": "mySuperSecretToken",
+	"githubClientId": "7a21b80576e631067d5d",
+	"githubClientSecret": "b2ce826bc32848408612720e3ec5744743e64a54"
 }
