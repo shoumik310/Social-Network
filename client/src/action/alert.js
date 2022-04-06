@@ -13,6 +13,7 @@ export const setAlert =
 				id,
 			},
 		});
+		window.scroll(0, 0);
 
 		setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), timeout);
 	};

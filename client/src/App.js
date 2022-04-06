@@ -7,6 +7,10 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Alert from './components/layout/Alert';
 import Dashboard from './components/dashboard/Dashboard';
+import CreateProfile from './components/profile-forms/CreateProfile';
+import EditProfile from './components/profile-forms/EditProfile';
+import AddExperience from './components/profile-forms/AddExperience';
+import AddEducation from './components/profile-forms/AddEducation';
 import setAuthToken from './utils/setAuthToken';
 import { loadUser } from './action/auth';
 import './App.css';
@@ -40,6 +44,42 @@ const App = () => {
 								element={
 									<PrivateRoute>
 										<Dashboard />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								exact
+								path='/create-profile'
+								element={
+									<PrivateRoute>
+										<CreateProfile />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								exact
+								path='/edit-profile'
+								element={
+									<PrivateRoute>
+										<EditProfile />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								exact
+								path='/add-experience'
+								element={
+									<PrivateRoute>
+										<AddExperience />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								exact
+								path='/add-education'
+								element={
+									<PrivateRoute>
+										<AddEducation />
 									</PrivateRoute>
 								}
 							/>

@@ -5,6 +5,7 @@ const request = require('request');
 const config = require('config');
 const { validationResult, check } = require('express-validator');
 
+const Post = require('../../models/Post');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
@@ -18,7 +19,7 @@ router.get('/me', auth, async (req, res) => {
 			['name', 'avatar']
 		);
 		if (!profile) {
-			res.status(400).json({ msg: 'There is no profile for this user' });
+			return res.status(400).json({ msg: 'There is no profile for this user' });
 		}
 
 		res.json(profile);
@@ -68,12 +69,9 @@ router.post(
 		if (skills)
 			profileFields.skills = skills.split(',').map((skill) => skill.trim());
 
-		profileFields.social = {};
-		if (youtube) profileFields.social.youtube = youtube;
-		if (twitter) profileFields.social.twitter = twitter;
-		if (facebook) profileFields.social.facebook = facebook;
-		if (linkedin) profileFields.social.linkedin = linkedin;
-		if (instagram) profileFields.social.instagram = instagram;
+		profileFields.social = { youtube, twitter, facebook, linkedin, instagram };
+
+		console.log(profileFields);
 
 		try {
 			let profile = await Profile.findOne({ user: req.user.id });
@@ -91,7 +89,7 @@ router.post(
 			profile = new Profile(profileFields);
 			await profile.save();
 
-			res.json({ profile });
+			res.json(profile);
 		} catch (error) {
 			console.error(error.message);
 			res.status(500).send('Server Error');
@@ -125,7 +123,7 @@ router.get('/user/:user_id', async (req, res) => {
 			return res.status(400).json({ msg: 'Profile Not Found' });
 		}
 
-		res.json({ profile });
+		res.json(profile);
 	} catch (err) {
 		console.error(err.message);
 		if (err.kind == 'ObjectId') {
@@ -140,7 +138,8 @@ router.get('/user/:user_id', async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
 	try {
-		//TODO - Delete Posts
+		//Delete Posts
+		await Post.deleteMany({ user: req.user.id });
 
 		//Deleting Profile
 		await Profile.findOneAndDelete({
@@ -185,7 +184,7 @@ router.put(
 
 			await profile.save();
 
-			res.json({ profile });
+			res.json(profile);
 		} catch (err) {
 			console.error(err.message);
 			res.status(500).send('Server Error');
@@ -201,10 +200,9 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
 		const profile = await Profile.findOne({ user: req.user.id });
 
 		//get remove index
-		const removeIndex = profile.experience
-			.map((item) => item.id)
-			.indexOf(req.params.exp_id);
-		profile.experience.splice(removeIndex, 1);
+		profile.experience = profile.experience.filter(
+			(exp) => exp.id !== req.params.exp_id
+		);
 
 		await profile.save();
 
@@ -251,7 +249,7 @@ router.put(
 
 			await profile.save();
 
-			res.json({ profile });
+			res.json(profile);
 		} catch (err) {
 			console.error(err.message);
 			res.status(500).send('Server Error');
@@ -267,15 +265,13 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
 		const profile = await Profile.findOne({ user: req.user.id });
 
 		//Getting remove Index
-		const removeIndex = profile.education
-			.map((item) => item.id)
-			.indexOf(req.params.edu_id);
-
-		profile.education.splice(removeIndex, 1);
+		profile.education = profile.education.filter(
+			(edu) => edu.id !== req.params.edu_id
+		);
 
 		await profile.save();
 
-		res.json({ profile });
+		res.json(profile);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send('Server Error');

@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const PrivateRoute = ({ children, auth: { isAuthenticated, loading } }) =>
-	isAuthenticated && !loading ? children : <Navigate to='/login' />;
+	!isAuthenticated && !loading ? <Navigate to='/login' /> : children;
 
 PrivateRoute.propTypes = {
 	auth: PropTypes.object.isRequired,
