@@ -29,7 +29,7 @@ router.post(
 				avatar: user.avatar,
 			});
 			const post = await newPost.save();
-			res.json({ post });
+			res.json(post);
 		} catch (err) {
 			console.error(err.message);
 			res.status(500).send('Server Error');
@@ -44,7 +44,7 @@ router.get('/', auth, async (req, res) => {
 	try {
 		const posts = await Post.find().sort({ date: -1 });
 
-		res.json({ posts });
+		res.json(posts);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send('Server Error');
@@ -62,7 +62,7 @@ router.get('/:post_id', auth, async (req, res) => {
 			return res.status(404).json({ msg: 'Post Not Found' });
 		}
 
-		res.json({ post });
+		res.json(post);
 	} catch (err) {
 		console.error(err.message);
 
@@ -115,10 +115,7 @@ router.put('/like/:post_id', auth, async (req, res) => {
 		}
 
 		//Check if post has already been liked
-		if (
-			post.likes.filter((like) => like.user.toString() === req.user.id)
-				.length >= 1
-		) {
+		if (post.likes.some((like) => like.user.toString() === req.user.id)) {
 			return res.status(400).json({ msg: 'Post Already Liked' });
 		}
 
@@ -146,16 +143,13 @@ router.put('/unlike/:post_id', auth, async (req, res) => {
 		}
 
 		//Check if post has not been liked
-		if (
-			post.likes.filter((like) => like.user.toString() === req.user.id).length <
-			1
-		) {
+		if (!post.likes.some((like) => like.user.toString() === req.user.id)) {
 			return res.status(400).json({ msg: 'Post Not Liked' });
 		}
 
 		//Get remove index
 		const removeIndex = post.likes
-			.map((like) => like.id.toString())
+			.map((like) => like.user.toString())
 			.indexOf(req.user.id);
 		post.likes.splice(removeIndex, 1);
 		await post.save();
@@ -170,10 +164,10 @@ router.put('/unlike/:post_id', auth, async (req, res) => {
 	}
 });
 
-// @route PUT api/posts/comment/:post_id
+// @route POST api/posts/comment/:post_id
 // @desc Comment on a post
 // @access Private
-router.put(
+router.post(
 	'/comment/:post_id',
 	auth,
 	check('text', 'Text is required').notEmpty(),
