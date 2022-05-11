@@ -60,36 +60,36 @@ router.post(
 			instagram,
 		} = req.body;
 
-		const profileFields = {};
-		profileFields.user = req.user.id;
-		if (company) profileFields.company = company;
-		if (website) profileFields.website = website;
-		if (location) profileFields.location = location;
-		if (bio) profileFields.bio = bio;
-		if (status) profileFields.status = status;
-		if (githubusername) profileFields.githubusername = githubusername;
-		if (skills)
-			profileFields.skills = skills.split(',').map((skill) => skill.trim());
+		const profileFields = {
+			user: req.user.id,
+			company,
+			location,
+			website: website === '' ? '' : normalize(website, { forceHttps: true }),
+			bio,
+			skills: Array.isArray(skills)
+				? skills
+				: skills.split(',').map((skill) => ' ' + skill.trim()),
+			status,
+			githubusername,
+		};
 
-		profileFields.social = { youtube, twitter, facebook, linkedin, instagram };
+		// Build social object and add to profileFields
+		const socialFields = { youtube, twitter, instagram, linkedin, facebook };
+		for (const [key, value] of Object.entries(socialFields)) {
+			if (value.length > 0) {
+				socialFields[key] = normalize(value, { forceHttps: true });
+			}
+		}
+		profileFields.social = socialFields;
 
 		console.log(profileFields);
 
 		try {
-			let profile = await Profile.findOne({ user: req.user.id });
-
-			if (profile) {
-				profile = await Profile.findOneAndUpdate(
-					{ user: req.user.id },
-					{ $set: profileFields },
-					{ new: true }
-				);
-
-				return res.json({ profile });
-			}
-
-			profile = new Profile(profileFields);
-			await profile.save();
+			profile = await Profile.findOneAndUpdate(
+				{ user: req.user.id },
+				{ $set: profileFields },
+				{ new: true, upsert: true }
+			);
 
 			res.json(profile);
 		} catch (error) {
