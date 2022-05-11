@@ -10,13 +10,15 @@ import {
 	CLEAR_PROFILE,
 } from './types';
 import { setAlert } from './alert';
-import setAuthToken from '../utils/setAuthToken';
+
+/*
+  NOTE: we don't need a config object for axios as the
+ default headers in axios are already Content-Type: application/json
+ also axios stringifies and parses JSON for you, so no need for 
+ JSON.stringify or JSON.parse
+*/
 
 export const loadUser = () => async (dispatch) => {
-	if (localStorage.getItem('token')) {
-		setAuthToken(localStorage.getItem('token'));
-	}
-
 	try {
 		const res = await axios.get('/api/auth');
 
