@@ -5,8 +5,9 @@ import Login from '../auth/Login';
 import Register from '../auth/Register';
 import Alert from '../layout/Alert';
 import Dashboard from '../dashboard/Dashboard';
-import CreateProfile from '../profile-forms/CreateProfile';
-import EditProfile from '../profile-forms/EditProfile';
+// import CreateProfile from '../profile-forms/CreateProfile';
+// import EditProfile from '../profile-forms/EditProfile';
+import ProfileForm from '../profile-forms/ProfileForm';
 import AddExperience from '../profile-forms/AddExperience';
 import AddEducation from '../profile-forms/AddEducation';
 import Profiles from '../profiles/Profiles';
@@ -38,7 +39,7 @@ const AppRoutes = () => {
 					path='/create-profile'
 					element={
 						<PrivateRoute>
-							<CreateProfile />
+							<ProfileForm />
 						</PrivateRoute>
 					}
 				/>
@@ -47,7 +48,7 @@ const AppRoutes = () => {
 					path='/edit-profile'
 					element={
 						<PrivateRoute>
-							<EditProfile />
+							<ProfileForm />
 						</PrivateRoute>
 					}
 				/>
